@@ -52,9 +52,13 @@ app.use('/api/posts', postRoutes);
 app.use('/api/posts', commentRoutes);
 app.use('/api/posts', likeRoutes);
 
+app.get('/', (req, res) => {
+    res.redirect('/api-docs');
+});
+
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
+    console.log(`Server running on port ${port}\nhttp://localhost:${port}\nAPI: http://localhost:${port}/api-docs`);
 });
 
 
