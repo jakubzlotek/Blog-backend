@@ -53,6 +53,33 @@ router.get('/', postController.getAllPosts);
  */
 router.post('/', authenticate, postController.createPost);
 
+
+/**
+ * @swagger
+ * /api/posts/search:
+ *   get:
+ *     summary: Search posts by hashtags or keywords
+ *     description: This endpoint allows searching for posts using hashtags or keywords.
+ *     tags:
+ *       - Posts
+ *     parameters:
+ *       - name: query
+ *         in: query
+ *         required: true
+ *         description: The search query, which can include hashtags or keywords
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Returns an array of matching posts
+ *       500:
+ *         description: Internal server error
+ *       400:
+ *        description: Missing query parameter
+ */
+router.get('/search', postController.searchPosts);
+
+
 /**
  * @swagger
  * /api/posts/{id}:
@@ -106,5 +133,7 @@ router.get('/:id', postController.getPostById);
  *         description: Internal server error
  */
 router.delete('/:id', authenticate, postController.deletePost);
+
+
 
 module.exports = router;

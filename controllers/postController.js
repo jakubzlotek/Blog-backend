@@ -40,6 +40,15 @@ const postController = {
             res.send('Post created');
         });
     },
+    searchPosts: (req, res) => {
+        const { query } = req.query;
+        if (!query) return res.status(400).send('Query is required');
+
+        Post.search(query, (err, posts) => {
+            if (err) return res.status(500).json({ error: 'Failed to search posts' });
+            res.json(posts);
+        });
+    },
 };
 
 module.exports = postController;

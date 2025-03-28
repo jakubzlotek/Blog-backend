@@ -12,7 +12,27 @@ const Post = {
     },
     delete: (id, callback) => {
         db.run('DELETE FROM posts WHERE id = ?', [id], callback);
-    }
+    },
+    search: (query, callback) => {
+        const hashtags = query.match(/#[\w]+/g) || [];
+        const plainText = query.replace(/#[\w]+/g, '').trim();
+
+
+        let sql = 'SELECT * FROM posts WHERE ';
+        let params = [];
+        if (hashtags.length > 0) {
+            sql += hashtags.map((tag) => 'content LIKE ?').join(' AND ');
+            params = hashtags.map((tag) => `%${tag}%`);
+        } else {
+            sql += '(title LIKE ? OR content LIKE ?)';
+            params.push(`%${plainText}%`, `%${plainText}%`);
+        }
+        sql += ' ORDER BY created_at DESC';
+        db.all(sql, params, callback);
+
+
+    },
+
 };
 
 module.exports = Post;
