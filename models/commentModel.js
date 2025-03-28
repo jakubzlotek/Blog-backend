@@ -6,7 +6,10 @@ const Comment = {
     },
     create: (content, postId, userId, callback) => {
         db.run('INSERT INTO comments (content, post_id, user_id) VALUES (?, ?, ?)', [content, postId, userId], callback);
-    }
+    },
+    delete: (commentId, callback) => {
+        db.run('DELETE FROM comments WHERE id = ?', [commentId], callback);
+    },
 };
 
 module.exports = Comment;

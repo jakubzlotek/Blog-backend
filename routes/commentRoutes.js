@@ -61,4 +61,32 @@ router.get('/:id/comments', commentController.getCommentsByPostId);
  */
 router.post('/:id/comments', authenticate, commentController.addComment);
 
+//generate swagger documentation for the delete comment endpoint
+/**
+ * @swagger
+ * /api/posts/{id}/comments:
+ *   delete:
+ *     summary: Delete a comment
+ *     description: This endpoint deletes a specific comment.
+ *     tags:
+ *       - Comments
+ *     parameters:
+ *       - in: path
+ *         name: commentId
+ *         required: true
+ *         description: Comment ID
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Comment deleted successfully
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Comment not found
+ *       500:
+ *        description: Internal server error
+ */
+router.delete('/:id/comments', authenticate, commentController.deleteComment);
+
 module.exports = router;
