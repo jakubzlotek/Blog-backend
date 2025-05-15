@@ -10,6 +10,11 @@ const authController = {
             return res.status(400).send('Missing fields');
         }
 
+        // Validate email format
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            return res.status(400).send('Invalid email format');
+        }
+
         User.findByEmail(email, (err, user) => {
             if (user) {
                 return res.status(400).send('User already exists');

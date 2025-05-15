@@ -5,6 +5,14 @@ const router = express.Router();
 
 /**
  * @swagger
+ * tags:
+ *   name: Authentication
+ *   description: Authentication endpoints
+ */
+
+
+/**
+ * @swagger
  * /api/auth/register:
  *   post:
  *     summary: Register a new user
@@ -24,6 +32,10 @@ const router = express.Router();
  *                 type: string
  *               password:
  *                 type: string
+ *           example:
+ *            username: test
+ *            email: test@test.pl
+ *            password: test
  *     responses:
  *       201:
  *         description: User created successfully
@@ -54,7 +66,7 @@ router.post('/register', authController.register);
  *               password:
  *                 type: string
  *           example:
- *            email: test
+ *            email: test@test.pl
  *            password: test
  *    
  *     responses:
@@ -68,3 +80,5 @@ router.post('/register', authController.register);
 router.post('/login', authController.login);
 
 module.exports = router;
+
+
