@@ -6,6 +6,13 @@ const router = express.Router();
 
 /**
  * @swagger
+ * tags:
+ *   name: Posts
+ *   description: Post endpoints
+ */
+
+/**
+ * @swagger
  * /api/posts:
  *   get:
  *     summary: Get all posts

@@ -1,4 +1,5 @@
 const Like = require('../models/likeModel');
+const Post = require('../models/postModel');
 
 const likeController = {
     getLikesByPostId: (req, res) => {
@@ -14,10 +15,18 @@ const likeController = {
         const { id } = req.params;
         const userId = req.user.id;
 
-        Like.create(id, userId, (err) => {
+        if (!id) return res.status(400).send('Post ID is required');
+
+        Post.findById(id, (err, post) => {
             if (err) return res.status(500).send('Database error');
-            res.status(201).send('Like added');
+            if (!post) return res.status(404).send('Post not found');
+
+            Like.create(id, userId, (err) => {
+                if (err) return res.status(500).send('Database error');
+                res.status(201).send('Like added');
+            });
         });
+
     }
 };
 

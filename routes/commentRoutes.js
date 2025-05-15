@@ -6,6 +6,13 @@ const router = express.Router();
 
 /**
  * @swagger
+ * tags:
+ *   name: Comments
+ *   description: Comment endpoints
+ */
+
+/**
+ * @swagger
  * /api/posts/{id}/comments:
  *   get:
  *     summary: Get all comments for a post
@@ -35,6 +42,8 @@ router.get('/:id/comments', commentController.getCommentsByPostId);
  *     description: This endpoint adds a new comment to a specific post.
  *     tags:
  *       - Comments
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -49,7 +58,7 @@ router.get('/:id/comments', commentController.getCommentsByPostId);
  *           schema:
  *             type: object
  *             properties:
- *               text:
+ *               content:
  *                 type: string
  *     responses:
  *       201:
@@ -64,13 +73,21 @@ router.post('/:id/comments', authenticate, commentController.addComment);
 //generate swagger documentation for the delete comment endpoint
 /**
  * @swagger
- * /api/posts/{id}/comments:
+ * /api/posts/{id}/comments/{commentId}:
  *   delete:
- *     summary: Delete a comment
- *     description: This endpoint deletes a specific comment.
+ *     summary: Delete a comment from a post
+ *     description: This endpoint deletes a specific comment from a post.
  *     tags:
  *       - Comments
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: Post ID
+ *         schema:
+ *           type: string
  *       - in: path
  *         name: commentId
  *         required: true
@@ -84,9 +101,7 @@ router.post('/:id/comments', authenticate, commentController.addComment);
  *         description: Forbidden
  *       404:
  *         description: Comment not found
- *       500:
- *        description: Internal server error
- */
-router.delete('/:id/comments', authenticate, commentController.deleteComment);
+*/
+router.delete('/:id/comments/:commentId', authenticate, commentController.deleteComment);
 
 module.exports = router;

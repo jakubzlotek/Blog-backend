@@ -4,6 +4,7 @@ const postController = {
     getAllPosts: (req, res) => {
         Post.findAll((err, posts) => {
             if (err) return res.status(500).send('Database error');
+            if (!posts) return res.status(200).json([]);
             res.json(posts);
         });
     },
@@ -20,6 +21,10 @@ const postController = {
         const { id } = req.params;
         const userId = req.user.id;
 
+
+        if (!id) return res.status(400).send('Post ID is required');
+
+
         Post.findById(id, (err, post) => {
             if (err || !post) return res.status(404).send('Post not found');
             if (post.user_id !== userId) return res.status(403).send('Forbidden');
@@ -34,6 +39,10 @@ const postController = {
     createPost: (req, res) => {
         const { title, content } = req.body;
         const userId = req.user.id;
+
+        if (!title || !content) return res.status(400).send('Title and content are required');
+        if (title.length > 255) return res.status(400).send('Title is too long');
+        if (content.length > 1000) return res.status(400).send('Content is too long');
 
         Post.create(title, content, userId, (err) => {
             if (err) return res.status(500).send('Database error');

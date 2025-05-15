@@ -1,4 +1,5 @@
 const db = require('../database');
+const { findById } = require('./postModel');
 
 const Comment = {
     findAllByPostId: (postId, callback) => {
@@ -10,6 +11,9 @@ const Comment = {
     delete: (commentId, callback) => {
         db.run('DELETE FROM comments WHERE id = ?', [commentId], callback);
     },
+    findById: (commentId, callback) => {
+        db.get('SELECT * FROM comments WHERE id = ?', [commentId], callback);
+    }
 };
 
 module.exports = Comment;

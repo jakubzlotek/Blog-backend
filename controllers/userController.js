@@ -17,7 +17,7 @@ const userController = {
         const { email, username, password } = req.body;
 
         if (!email || !username) {
-            return res.status(400).send('Email and username are required');
+            return res.status(401).send('Email and username are required');
         }
 
         //verify email format
@@ -26,10 +26,8 @@ const userController = {
             return res.status(400).send('Invalid email format');
         }
 
-        //verify username format
-        const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
-        if (!usernameRegex.test(username)) {
-            return res.status(400).send('Invalid username format');
+        if (username.trim() === '') {
+            return res.status(400).send('Username cannot be empty');
         }
 
         User.findByUsername(username, (err, userByUsername) => {

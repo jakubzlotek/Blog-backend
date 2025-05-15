@@ -6,6 +6,13 @@ const router = express.Router();
 
 /**
  * @swagger
+ * tags:
+ *   name: Like
+ *   description: Like endpoints
+ */
+
+/**
+ * @swagger
  * /api/posts/{id}/like:
  *   get:
  *     summary: Get all likes for a post
@@ -43,14 +50,10 @@ router.get('/:id/like', likeController.getLikesByPostId);
  *         required: true
  *         description: The post id
  *     responses:
- *       200:
- *         description: The list of likes for the post
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Like'
+ *       201:
+ *         description: Like added successfully
+ *       400:
+ *         description: Bad request
  */
 router.post('/:id/like', authenticate, likeController.addLike);
 
