@@ -2,7 +2,25 @@ const db = require('../database');
 
 const Post = {
     findAll: (callback) => {
-        db.all('SELECT * FROM posts ORDER BY created_at DESC', callback);
+        db.all(
+            `SELECT posts.*, users.username, users.avatar_url
+             FROM posts
+             JOIN users ON posts.user_id = users.id
+             ORDER BY posts.created_at DESC`,
+            callback
+        );
+    },
+    findAllPaginated: (page = 1, limit = 10, callback) => {
+        const offset = (page - 1) * limit;
+        db.all(
+            `SELECT posts.*, users.username, users.avatar_url
+             FROM posts
+             JOIN users ON posts.user_id = users.id
+             ORDER BY posts.created_at DESC
+             LIMIT ? OFFSET ?`,
+            [limit, offset],
+            callback
+        );
     },
     findById: (id, callback) => {
         db.get('SELECT * FROM posts WHERE id = ?', [id], callback);

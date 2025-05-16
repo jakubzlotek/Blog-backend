@@ -4,7 +4,8 @@ CREATE TABLE IF NOT EXISTS users (
     username TEXT NOT NULL UNIQUE,
     email TEXT NOT NULL UNIQUE,
     password TEXT NOT NULL, -- Store hashed passwords (don't store plain text passwords)
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    avatar_url TEXT DEFAULT '/uploads/placeholder.jpg'
 );
 
 CREATE TABLE IF NOT EXISTS posts (
@@ -33,5 +34,6 @@ CREATE TABLE IF NOT EXISTS likes (
     user_id INTEGER,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (post_id) REFERENCES posts(id),
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    UNIQUE(post_id, user_id) -- Add this line
 );

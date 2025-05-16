@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon app.js",
     "start": "node app.js",
-    "test": "cross-env DB_PATH=./database.test.db jest --runInBand"
+    "test": "cross-env DB_PATH=./database.test.db jest --runInBand --verbose"
   },
   "author": "Jakub Złotek, Oskar Sadkowski, Maciej Pieprzyk",
   "license": "MIT",
@@ -15,6 +15,7 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.2",
     "nodemon": "^3.1.9",
     "sqlite3": "^5.1.7",
     "swagger-jsdoc": "^6.2.8",

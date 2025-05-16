@@ -66,6 +66,22 @@ const userController = {
             if (err || !user) return res.status(404).send('User not found');
             res.json(user);
         });
+    },
+    uploadAvatar: (req, res) => {
+        if (!req.file) return res.status(400).send('No file uploaded');
+        const avatarUrl = `/uploads/${req.file.filename}`;
+        const userId = req.user.id;
+        User.findById(userId, (err, user) => {
+            if (err || !user) return res.status(404).send('User not found');
+            User.update(
+                userId,
+                { username: user.username, email: user.email, avatar_url: avatarUrl },
+                (err, updatedUser) => {
+                    if (err) return res.status(500).send('Error updating avatar');
+                    res.json({ avatar_url: avatarUrl });
+                }
+            );
+        });
     }
 };
 

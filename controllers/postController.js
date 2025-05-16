@@ -2,11 +2,22 @@ const Post = require('../models/postModel');
 
 const postController = {
     getAllPosts: (req, res) => {
-        Post.findAll((err, posts) => {
-            if (err) return res.status(500).send('Database error');
-            if (!posts) return res.status(200).json([]);
-            res.json(posts);
-        });
+        const page = req.query.page ? parseInt(req.query.page) : null;
+        const limit = req.query.limit ? parseInt(req.query.limit) : null;
+
+        if (page && limit) {
+            Post.findAllPaginated(page, limit, (err, posts) => {
+                if (err) return res.status(500).send('Database error');
+                if (!posts) return res.status(200).json([]);
+                res.json(posts);
+            });
+        } else {
+            Post.findAll((err, posts) => {
+                if (err) return res.status(500).send('Database error');
+                if (!posts) return res.status(200).json([]);
+                res.json(posts);
+            });
+        }
     },
 
     getPostById: (req, res) => {

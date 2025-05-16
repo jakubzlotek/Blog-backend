@@ -21,9 +21,16 @@ const likeController = {
             if (err) return res.status(500).send('Database error');
             if (!post) return res.status(404).send('Post not found');
 
-            Like.create(id, userId, (err) => {
+            // Check if the user already liked this post
+            Like.findAllByPostId(id, (err, likes) => {
                 if (err) return res.status(500).send('Database error');
-                res.status(201).send('Like added');
+                if (likes.some(like => like.user_id === userId)) {
+                    return res.status(409).send('Already liked');
+                }
+                Like.create(id, userId, (err) => {
+                    if (err) return res.status(500).send('Database error');
+                    res.status(201).send('Like added');
+                });
             });
         });
 

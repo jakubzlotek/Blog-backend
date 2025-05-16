@@ -19,26 +19,26 @@ const User = {
         );
     },
     findById: (id, callback) => {
-        db.get('SELECT id, username, email FROM users WHERE id = ?', [id], callback);
+        db.get('SELECT id, username, email, avatar_url FROM users WHERE id = ?', [id], callback);
     },
     update: (id, data, callback) => {
-        // data: { username, email, password? }
+        // data: { username, email, password?, avatar_url? }
         if (data.password) {
             db.run(
-                'UPDATE users SET username = ?, email = ?, password = ? WHERE id = ?',
-                [data.username, data.email, data.password, id],
+                'UPDATE users SET username = ?, email = ?, password = ?, avatar_url = COALESCE(?, avatar_url) WHERE id = ?',
+                [data.username, data.email, data.password, data.avatar_url, id],
                 function (err) {
                     if (err) return callback(err);
-                    db.get('SELECT id, username, email FROM users WHERE id = ?', [id], callback);
+                    db.get('SELECT id, username, email, avatar_url FROM users WHERE id = ?', [id], callback);
                 }
             );
         } else {
             db.run(
-                'UPDATE users SET username = ?, email = ? WHERE id = ?',
-                [data.username, data.email, id],
+                'UPDATE users SET username = ?, email = ?, avatar_url = COALESCE(?, avatar_url) WHERE id = ?',
+                [data.username, data.email, data.avatar_url, id],
                 function (err) {
                     if (err) return callback(err);
-                    db.get('SELECT id, username, email FROM users WHERE id = ?', [id], callback);
+                    db.get('SELECT id, username, email, avatar_url FROM users WHERE id = ?', [id], callback);
                 }
             );
         }
