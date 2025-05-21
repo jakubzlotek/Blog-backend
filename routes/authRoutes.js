@@ -1,4 +1,5 @@
 const express = require('express');
+const { body, validationResult } = require('express-validator');
 const authController = require('../controllers/authController');
 
 const router = express.Router();
@@ -44,8 +45,36 @@ const router = express.Router();
  *       500:
  *         description: Internal server error
  */
-router.post('/register', authController.register);
-
+router.post(
+  '/register',
+  [
+    body('username')
+      .isLength({ min: 3 })
+      .withMessage('Username must be at least 3 characters long'),
+    body('email')
+      .isEmail()
+      .withMessage('Invalid email format'),
+    body('password')
+      .isLength({ min: 8 })
+      .withMessage('Password must be at least 8 characters long')
+      .matches(/[A-Z]/)
+      .withMessage('Password must contain an uppercase letter')
+      .matches(/[a-z]/)
+      .withMessage('Password must contain a lowercase letter')
+      .matches(/\d/)
+      .withMessage('Password must contain a digit')
+      .matches(/[\W_]/)
+      .withMessage('Password must contain a special character'),
+  ],
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    next();
+  },
+  authController.register
+);
 /**
  * @swagger
  * /api/auth/login:
@@ -68,7 +97,6 @@ router.post('/register', authController.register);
  *           example:
  *            email: test@test.pl
  *            password: test
- *    
  *     responses:
  *       200:
  *         description: Login successful, returns JWT token
@@ -77,7 +105,29 @@ router.post('/register', authController.register);
  *       500:
  *         description: Internal server error
  */
-router.post('/login', authController.login);
+router.post(
+  '/login',
+  [
+    body('identifier')
+      .notEmpty().withMessage('Email lub nazwa użytkownika jest wymagana')
+      .custom(val => {
+        if (val.includes('@') && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+          throw new Error('Nieprawidłowy format email');
+        }
+        return true;
+      }),
+    body('password')
+      .notEmpty().withMessage('Hasło jest wymagane'),
+  ],
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    next();
+  },
+  authController.login
+);
 
 module.exports = router;
 
