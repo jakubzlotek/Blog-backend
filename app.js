@@ -59,6 +59,10 @@ app.get('/', (req, res) => {
   res.redirect('/api-docs');
 });
 
+app.get('/api/health', (req, res) => {
+  res.json({ success: true, message: 'Backend is running!' });
+});
+
 const port = process.env.PORT || 3000;
 if (require.main === module) {
 
