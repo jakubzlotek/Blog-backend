@@ -90,12 +90,12 @@ router.post(
  *           schema:
  *             type: object
  *             properties:
- *               email:
+ *               identifier:
  *                 type: string
  *               password:
  *                 type: string
  *           example:
- *            email: test@test.pl
+ *            identifier: test@test.pl
  *            password: test
  *     responses:
  *       200:
