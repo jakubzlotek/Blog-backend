@@ -44,14 +44,15 @@ describe('Like Integration Tests', () => {
 
     // Get the post ID
     const postsRes = await request(app).get('/api/posts');
-    const post = postsRes.body.find(p => p.title === 'Likeable Post');
+    const post = postsRes.body.posts.find(p => p.title === 'Likeable Post');
     postId = post.id;
   });
 
   test('GET /api/posts/:id/like returns array', async () => {
     const res = await request(app).get(`/api/posts/${postId}/like`);
     expect(res.statusCode).toBe(200);
-    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body.success).toBe(true);
+    expect(Array.isArray(res.body.likes)).toBe(true);
   });
 
   test('POST /api/posts/:id/like adds a like', async () => {
@@ -60,7 +61,8 @@ describe('Like Integration Tests', () => {
       .set('Authorization', `Bearer ${userToken}`);
 
     expect(res.statusCode).toBe(201);
-    expect(res.text).toMatch(/like added/i);
+    expect(res.body.success).toBe(true);
+    expect(res.body.message).toMatch(/like added/i);
   });
 
   test('POST /api/posts/:id/like without token returns 401', async () => {
@@ -68,7 +70,8 @@ describe('Like Integration Tests', () => {
       .post(`/api/posts/${postId}/like`);
 
     expect(res.statusCode).toBe(401);
-    expect(res.text).toMatch(/unauthorized/i);
+    expect(res.body.success).toBe(false);
+    expect(res.body.message).toMatch(/unauthorized/i);
   });
 
   test('POST /api/posts/:id/like with invalid post id returns 404', async () => {
@@ -78,5 +81,6 @@ describe('Like Integration Tests', () => {
 
 
     expect(res.statusCode).toBe(404);
+    expect(res.body.success).toBe(false);
   });
 });

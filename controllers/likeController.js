@@ -6,8 +6,8 @@ const likeController = {
         const { id } = req.params;
 
         Like.findAllByPostId(id, (err, likes) => {
-            if (err) return res.status(500).send('Database error');
-            res.json(likes);
+            if (err) return res.status(500).json({ success: false, message: 'Database error' });
+            res.json({ success: true, likes });
         });
     },
 
@@ -15,25 +15,24 @@ const likeController = {
         const { id } = req.params;
         const userId = req.user.id;
 
-        if (!id) return res.status(400).send('Post ID is required');
+        if (!id) return res.status(400).json({ success: false, message: 'Post ID is required' });
 
         Post.findById(id, (err, post) => {
-            if (err) return res.status(500).send('Database error');
-            if (!post) return res.status(404).send('Post not found');
+            if (err) return res.status(500).json({ success: false, message: 'Database error' });
+            if (!post) return res.status(404).json({ success: false, message: 'Post not found' });
 
             // Check if the user already liked this post
             Like.findAllByPostId(id, (err, likes) => {
-                if (err) return res.status(500).send('Database error');
+                if (err) return res.status(500).json({ success: false, message: 'Database error' });
                 if (likes.some(like => like.user_id === userId)) {
-                    return res.status(409).send('Already liked');
+                    return res.status(409).json({ success: false, message: 'Already liked' });
                 }
                 Like.create(id, userId, (err) => {
-                    if (err) return res.status(500).send('Database error');
-                    res.status(201).send('Like added');
+                    if (err) return res.status(500).json({ success: false, message: 'Database error' });
+                    res.status(201).json({ success: true, message: 'Like added' });
                 });
             });
         });
-
     }
 };
 

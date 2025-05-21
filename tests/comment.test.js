@@ -50,7 +50,7 @@ describe('Comment Integration Tests', () => {
       .send({ title: 'Post for Comments', content: 'This post will have comments.' });
 
     const postsRes = await request(app).get('/api/posts');
-    const post = postsRes.body.find(p => p.title === 'Post for Comments');
+    const post = postsRes.body.posts.find(p => p.title === 'Post for Comments');
     postId = post.id;
   });
 
@@ -61,7 +61,8 @@ describe('Comment Integration Tests', () => {
       .send({ content: 'This is a test comment.' });
 
     expect(res.statusCode).toBe(201);
-    expect(res.text).toMatch(/comment added/i);
+    expect(res.body.success).toBe(true);
+    expect(res.body.message).toMatch(/comment added/i);
   });
 
   test('GET /api/posts/:id/comments returns comments array', async () => {
@@ -73,11 +74,12 @@ describe('Comment Integration Tests', () => {
 
     const res = await request(app).get(`/api/posts/${postId}/comments`);
     expect(res.statusCode).toBe(200);
-    expect(Array.isArray(res.body)).toBe(true);
-    expect(res.body.some(c => c.content === 'Another test comment.')).toBe(true);
+    expect(res.body.success).toBe(true);
+    expect(Array.isArray(res.body.comments)).toBe(true);
+    expect(res.body.comments.some(c => c.content === 'Another test comment.')).toBe(true);
 
     // Save commentId for delete test
-    commentId = res.body.find(c => c.content === 'Another test comment.').id;
+    commentId = res.body.comments.find(c => c.content === 'Another test comment.').id;
   });
 
   test('POST /api/posts/:id/comments without token returns 401', async () => {
@@ -86,7 +88,8 @@ describe('Comment Integration Tests', () => {
       .send({ content: 'Should not work.' });
 
     expect(res.statusCode).toBe(401);
-    expect(res.text).toMatch(/unauthorized/i);
+    expect(res.body.success).toBe(false);
+    expect(res.body.message).toMatch(/unauthorized/i);
   });
 
   test('POST /api/posts/:id/comments with missing content returns 400', async () => {
@@ -96,7 +99,8 @@ describe('Comment Integration Tests', () => {
       .send({});
 
     expect(res.statusCode).toBe(400);
-    expect(res.text).toMatch(/content is required/i);
+    expect(res.body.success).toBe(false);
+    expect(res.body.message).toMatch(/content is required/i);
   });
 
   // Only run this test if deleteComment is implemented and route is correct
@@ -108,17 +112,18 @@ describe('Comment Integration Tests', () => {
       .send({ content: 'Comment to delete.' });
 
     const commentsRes = await request(app).get(`/api/posts/${postId}/comments`);
-    const comment = commentsRes.body.find(c => c.content === 'Comment to delete.');
+    const comment = commentsRes.body.comments.find(c => c.content === 'Comment to delete.');
 
     const res = await request(app)
       .delete(`/api/posts/${postId}/comments/${comment.id}`)
       .set('Authorization', `Bearer ${userToken}`);
 
     expect(res.statusCode).toBe(200);
-    expect(res.text).toMatch(/comment deleted/i);
+    expect(res.body.success).toBe(true);
+    expect(res.body.message).toMatch(/comment deleted/i);
 
     // Verify comment is deleted
     const verifyRes = await request(app).get(`/api/posts/${postId}/comments`);
-    expect(verifyRes.body.some(c => c.content === 'Comment to delete.')).toBe(false);
+    expect(verifyRes.body.comments.some(c => c.content === 'Comment to delete.')).toBe(false);
   });
 });

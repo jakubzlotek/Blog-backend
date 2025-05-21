@@ -53,14 +53,15 @@ describe('Post Integration Tests', () => {
 
     // Get the postId of the created post
     const postsRes = await request(app).get('/api/posts');
-    const post = postsRes.body.find(p => p.title === 'Delete Me');
+    const post = postsRes.body.posts.find(p => p.title === 'Delete Me');
     postId = post.id;
   });
 
   test('GET /api/posts returns array', async () => {
     const res = await request(app).get('/api/posts');
     expect(res.statusCode).toBe(200);
-    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body.success).toBe(true);
+    expect(Array.isArray(res.body.posts)).toBe(true);
   });
 
   test('POST /api/posts creates a post', async () => {
@@ -69,8 +70,9 @@ describe('Post Integration Tests', () => {
       .set('Authorization', `Bearer ${userToken}`)
       .send({ title: 'Test Post', content: 'This is a test post.' });
 
-    expect(res.statusCode).toBe(200); // Controller sends 200, not 201
-    expect(res.text).toMatch(/post created/i);
+    expect(res.statusCode).toBe(201);
+    expect(res.body.success).toBe(true);
+    expect(res.body.message).toMatch(/post created/i);
   });
 
   test('POST /api/posts without token returns 401', async () => {
@@ -79,7 +81,8 @@ describe('Post Integration Tests', () => {
       .send({ title: 'No Auth', content: 'Should fail.' });
 
     expect(res.statusCode).toBe(401);
-    expect(res.text).toMatch(/unauthorized/i);
+    expect(res.body.success).toBe(false);
+    expect(res.body.message).toMatch(/unauthorized/i);
   });
 
   test('POST /api/posts with missing fields returns 400', async () => {
@@ -89,6 +92,7 @@ describe('Post Integration Tests', () => {
       .send({ title: '' });
 
     expect(res.statusCode).toBe(400);
+    expect(res.body.success).toBe(false);
   });
 
   test('GET /api/posts/:id returns the post', async () => {
@@ -100,18 +104,20 @@ describe('Post Integration Tests', () => {
 
     // Find the post ID
     const postsRes = await request(app).get('/api/posts');
-    const post = postsRes.body.find(p => p.title === 'Find Me');
+    const post = postsRes.body.posts.find(p => p.title === 'Find Me');
     expect(post).toBeDefined();
 
     const res = await request(app).get(`/api/posts/${post.id}`);
     expect(res.statusCode).toBe(200);
-    expect(res.body).toHaveProperty('title', 'Find Me');
+    expect(res.body.success).toBe(true);
+    expect(res.body.post).toHaveProperty('title', 'Find Me');
   });
 
   test('GET /api/posts/:id with invalid id returns 404', async () => {
     const res = await request(app).get('/api/posts/999999');
     expect(res.statusCode).toBe(404);
-    expect(res.text).toMatch(/post not found/i);
+    expect(res.body.success).toBe(false);
+    expect(res.body.message).toMatch(/post not found/i);
   });
 
   test('DELETE /api/posts/:id by non-owner returns 403', async () => {
@@ -132,7 +138,8 @@ describe('Post Integration Tests', () => {
       .set('Authorization', `Bearer ${otherToken}`);
 
     expect(res.statusCode).toBe(403);
-    expect(res.text).toMatch(/forbidden/i);
+    expect(res.body.success).toBe(false);
+    expect(res.body.message).toMatch(/forbidden/i);
   });
 
   test('DELETE /api/posts/:id by owner deletes post', async () => {
@@ -141,7 +148,8 @@ describe('Post Integration Tests', () => {
       .set('Authorization', `Bearer ${userToken}`);
 
     expect(res.statusCode).toBe(200);
-    expect(res.text).toMatch(/post deleted/i);
+    expect(res.body.success).toBe(true);
+    expect(res.body.message).toMatch(/post deleted/i);
   });
 
   test('DELETE /api/posts/:id with invalid id returns 404', async () => {
@@ -150,7 +158,8 @@ describe('Post Integration Tests', () => {
       .set('Authorization', `Bearer ${userToken}`);
 
     expect(res.statusCode).toBe(404);
-    expect(res.text).toMatch(/post not found/i);
+    expect(res.body.success).toBe(false);
+    expect(res.body.message).toMatch(/post not found/i);
   });
 
   test('GET /api/posts/search?query=Test returns posts', async () => {
@@ -162,13 +171,24 @@ describe('Post Integration Tests', () => {
 
     const res = await request(app).get('/api/posts/search?query=Searchable');
     expect(res.statusCode).toBe(200);
-    expect(Array.isArray(res.body)).toBe(true);
-    expect(res.body.some(p => p.title === 'Searchable')).toBe(true);
+    expect(res.body.success).toBe(true);
+    expect(Array.isArray(res.body.posts)).toBe(true);
+    expect(res.body.posts.some(p => p.title === 'Searchable')).toBe(true);
   });
 
   test('GET /api/posts/search with no query returns 400', async () => {
     const res = await request(app).get('/api/posts/search');
     expect(res.statusCode).toBe(400);
-    expect(res.text).toMatch(/query is required/i);
+    expect(res.body.success).toBe(false);
+    expect(res.body.message).toMatch(/query is required/i);
+  });
+
+  test('POST /api/posts/:id/like without token returns 401', async () => {
+    const res = await request(app)
+      .post(`/api/posts/${postId}/like`);
+
+    expect(res.statusCode).toBe(401);
+    expect(res.body.success).toBe(false);
+    expect(res.body.message).toMatch(/unauthorized/i);
   });
 });
