@@ -36,7 +36,7 @@ const User = {
 
   findById: (id, callback) => {
     db.get(
-      'SELECT id, username, email FROM users WHERE id = ?',
+      'SELECT id, username, email, avatar_url FROM users WHERE id = ?',
       [id],
       callback
     );
