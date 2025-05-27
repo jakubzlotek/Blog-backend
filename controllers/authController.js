@@ -54,7 +54,9 @@ const authController = {
         'secret_key',
         { expiresIn: '1h' }
       );
-      return res.json({ success: true, token });
+      // Remove password from user object before sending
+      const { password: _pw, ...userSafe } = user;
+      return res.json({ success: true, token, user: userSafe });
     } catch (err) {
       console.error('Login error:', err);
       return res.status(500).json({ success: false, message: 'Błąd wewnętrzny serwera' });

@@ -1,28 +1,78 @@
 const Post = require('../models/postModel');
+const Comment = require('../models/commentModel');
+const Like = require('../models/likeModel');
 
 const postController = {
     getAllPosts: (req, res) => {
         const page = req.query.page ? parseInt(req.query.page) : null;
         const limit = req.query.limit ? parseInt(req.query.limit) : null;
 
+        const handlePosts = async (posts) => {
+            try {
+                // For each post, fetch comments and likes count
+                const postsWithExtras = await Promise.all(
+                    (posts || []).map(async (post) => {
+                        const comments = await new Promise((resolve) => {
+                            Comment.findAllByPostId(post.id, (err, comments) => {
+                                resolve(comments || []);
+                            });
+                        });
+                        const likes = await new Promise((resolve) => {
+                            Like.findAllByPostId(post.id, (err, likes) => {
+                                resolve(likes || []);
+                            });
+                        });
+                        return {
+                            ...post,
+                            comments,
+                            likesCount: Array.isArray(likes) ? likes.length : 0,
+                        };
+                    })
+                );
+                res.json({ success: true, posts: postsWithExtras });
+            } catch (e) {
+                res.status(500).json({ success: false, message: 'Database error' });
+            }
+        };
         if (page && limit) {
             Post.findAllPaginated(page, limit, (err, posts) => {
                 if (err) return res.status(500).json({ success: false, message: 'Database error' });
-                res.json({ success: true, posts: posts || [] });
+                handlePosts(posts);
             });
         } else {
             Post.findAll((err, posts) => {
                 if (err) return res.status(500).json({ success: false, message: 'Database error' });
-                res.json({ success: true, posts: posts || [] });
+                handlePosts(posts);
             });
         }
     },
 
     getPostById: (req, res) => {
         const { id } = req.params;
-        Post.findById(id, (err, post) => {
+        Post.findById(id, async (err, post) => {
             if (err || !post) return res.status(404).json({ success: false, message: 'Post not found' });
-            res.json({ success: true, post });
+            try {
+                const comments = await new Promise((resolve) => {
+                    Comment.findAllByPostId(post.id, (err, comments) => {
+                        resolve(comments || []);
+                    });
+                });
+                const likes = await new Promise((resolve) => {
+                    Like.findAllByPostId(post.id, (err, likes) => {
+                        resolve(likes || []);
+                    });
+                });
+                res.json({
+                    success: true,
+                    post: {
+                        ...post,
+                        comments,
+                        likesCount: Array.isArray(likes) ? likes.length : 0,
+                    },
+                });
+            } catch (e) {
+                res.status(500).json({ success: false, message: 'Database error' });
+            }
         });
     },
 
