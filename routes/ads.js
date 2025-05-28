@@ -20,6 +20,39 @@ const ads = [
 ];
 
 // Endpoint do pobierania reklam
+
+/**
+ * @swagger
+ * tags:
+ *   name: Ads
+ *   description: Advertisement endpoints
+ */
+
+/**
+ * @swagger
+ * /api/ads:
+ *   get:
+ *     summary: Get all advertisements
+ *     tags: [Ads]
+ *     responses:
+ *       200:
+ *         description: Returns a list of advertisements
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: integer
+ *                   title:
+ *                     type: string
+ *                   image:
+ *                     type: string
+ *                   link:
+ *                     type: string
+ */
 router.get('/', (req, res) => {
   res.json(ads);
 });
