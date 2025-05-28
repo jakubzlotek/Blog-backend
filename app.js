@@ -5,7 +5,9 @@ const userRoutes = require('./routes/userRoutes');
 const postRoutes = require('./routes/postRoutes');
 const commentRoutes = require('./routes/commentRoutes');
 const likeRoutes = require('./routes/likeRoutes');
+const adsRouter = require('./routes/ads');
 const path = require('path');
+
 
 const swaggerUi = require('swagger-ui-express');
 const swaggerJSDoc = require('swagger-jsdoc');
@@ -54,6 +56,8 @@ app.use('/api/user', userRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/posts', commentRoutes);
 app.use('/api/posts', likeRoutes);
+app.use('/api/ads', adsRouter);
+
 
 app.get('/', (req, res) => {
   res.redirect('/api-docs');
