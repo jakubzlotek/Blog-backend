@@ -13,7 +13,10 @@ const Post = {
        FROM posts
        JOIN users ON posts.user_id = users.id
        ORDER BY posts.created_at DESC`,
-      callback
+      (err, rows) => {
+        // rows to tablica obiektów, każdy odpowiada jednemu wierszowi
+        callback(err, rows);
+      }
     );
   },
 
@@ -32,7 +35,9 @@ const Post = {
        ORDER BY posts.created_at DESC
        LIMIT ? OFFSET ?`,
       [limit, offset],
-      callback
+      (err, rows) => {
+        callback(err, rows);
+      }
     );
   },
 
@@ -49,20 +54,36 @@ const Post = {
        JOIN users ON posts.user_id = users.id
        WHERE posts.id = ?`,
       [id],
-      callback
+      (err, row) => {
+        callback(err, row);
+      }
     );
   },
 
   create: (title, content, userId, callback) => {
+    // Po wykonaniu INSERT, funkcja run() udostępnia this.lastID
     db.run(
-      "INSERT INTO posts (title, content, user_id) VALUES (?, ?, ?)",
+      `INSERT INTO posts (title, content, user_id) VALUES (?, ?, ?)`,
       [title, content, userId],
-      callback
+      function (err) {
+        // this.lastID to id nowo wstawionego wiersza
+        if (err) {
+          return callback(err);
+        }
+        callback(null, this.lastID);
+      }
     );
   },
 
   delete: (id, callback) => {
-    db.run("DELETE FROM posts WHERE id = ?", [id], callback);
+    db.run(
+      `DELETE FROM posts WHERE id = ?`,
+      [id],
+      function (err) {
+        // this.changes to liczba usuniętych wierszy (opcjonalnie można zwrócić)
+        callback(err);
+      }
+    );
   },
 
   search: (query, callback) => {
@@ -90,7 +111,9 @@ const Post = {
     }
     sql += " ORDER BY posts.created_at DESC";
 
-    db.all(sql, params, callback);
+    db.all(sql, params, (err, rows) => {
+      callback(err, rows);
+    });
   },
 };
 
