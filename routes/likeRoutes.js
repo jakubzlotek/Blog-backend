@@ -57,4 +57,6 @@ router.get('/:id/like', likeController.getLikesByPostId);
  */
 router.post('/:id/like', authenticate, likeController.addLike);
 
+router.delete('/:id/like', authenticate, likeController.removeLike);
+
 module.exports = router;
