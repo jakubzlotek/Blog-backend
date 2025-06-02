@@ -4,12 +4,34 @@ const Like = require('../models/likeModel');
 
 const postController = {
   getAllPosts: (req, res) => {
-    Post.findAll((err, rows) => {
+    const currentUserId = req.user?.id;
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 10;
+
+    Post.findAllPaginated(page, limit, async (err, posts) => {
       if (err) {
-        console.error('getAllPosts SQL error:', err);
         return res.status(500).json({ success: false, message: 'Database error' });
       }
-      return res.json({ success: true, posts: rows || [] });
+      const postsWithExtras = await Promise.all(
+        posts.map(async post => {
+          const comments = await new Promise(resolve =>
+            Comment.findAllByPostId(post.id, (err, comments) => resolve(comments || []))
+          );
+          const likes = await new Promise(resolve =>
+            Like.findAllByPostId(post.id, (err, likes) => resolve(likes || []))
+          );
+          const likedUserIds = likes.map(like => like.user_id);
+          const likedByCurrentUser = !!(currentUserId && likedUserIds.includes(currentUserId));
+          return {
+            ...post,
+            comments,
+            likesCount: likes.length,
+            likedByCurrentUser,
+            likedUserIds,
+          };
+        })
+      );
+      res.json({ success: true, posts: postsWithExtras });
     });
   },
 

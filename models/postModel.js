@@ -9,12 +9,12 @@ const Post = {
          posts.content, 
          posts.user_id, 
          posts.created_at, 
-         users.username 
+         users.username,
+         users.avatar_url
        FROM posts
        JOIN users ON posts.user_id = users.id
        ORDER BY posts.created_at DESC`,
       (err, rows) => {
-        // rows to tablica obiektów, każdy odpowiada jednemu wierszowi
         callback(err, rows);
       }
     );
@@ -29,7 +29,8 @@ const Post = {
          posts.content, 
          posts.user_id, 
          posts.created_at, 
-         users.username 
+         users.username,
+         users.avatar_url
        FROM posts
        JOIN users ON posts.user_id = users.id
        ORDER BY posts.created_at DESC
@@ -49,7 +50,8 @@ const Post = {
          posts.content, 
          posts.user_id, 
          posts.created_at, 
-         users.username 
+         users.username,
+         users.avatar_url
        FROM posts
        JOIN users ON posts.user_id = users.id
        WHERE posts.id = ?`,
