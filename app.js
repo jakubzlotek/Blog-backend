@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const app = express();
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
@@ -37,9 +38,7 @@ const swaggerOptions = {
       }
     }
   },
-
-
-  apis: ['./routes/*.js'], // Path to the API routes
+  apis: ['./routes/*.js'],
 };
 
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
@@ -47,6 +46,12 @@ const swaggerSpec = swaggerJSDoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use(express.json());
+
+// ← Włączamy CORS dla frontendu na porcie 3001
+app.use(cors({
+  origin: 'http://localhost:3001'
+}));
+
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use('/api/auth', authRoutes);
@@ -63,11 +68,12 @@ app.get('/api/health', (req, res) => {
   res.json({ success: true, message: 'Backend is running!' });
 });
 
+// Teraz backend nasłuchuje na porcie 3000
 const port = process.env.PORT || 3000;
 if (require.main === module) {
-
   app.listen(port, () => {
-    console.log(`Server running on port ${port}\nhttp://localhost:${port}\nAPI: http://localhost:${port}/api-docs`);
+    console.log(`Server running on port ${port}`);
+    console.log(`API docs: http://localhost:${port}/api-docs`);
   });
 }
 
