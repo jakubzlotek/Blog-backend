@@ -1,6 +1,7 @@
 const express = require('express');
 const postController = require('../controllers/postController');
 const authenticate = require('../middlewares/authMiddleware');
+const likeController = require('../controllers/likeController')
 
 const router = express.Router();
 
@@ -141,6 +142,8 @@ router.get('/:id', postController.getPostById);
  */
 router.delete('/:id', authenticate, postController.deletePost);
 
+router.post('/:id/like', authenticate, likeController.addLike);
 
+router.delete('/:id/like', authenticate, likeController.removeLike);
 
 module.exports = router;
