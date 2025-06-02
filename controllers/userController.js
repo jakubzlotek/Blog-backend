@@ -81,14 +81,10 @@ const userController = {
         const userId = req.user.id;
         User.findById(userId, (err, user) => {
             if (err || !user) return res.status(404).json({ success: false, message: 'User not found' });
-            User.update(
-                userId,
-                { username: user.username, email: user.email, avatar_url: avatarUrl },
-                (err, updatedUser) => {
-                    if (err) return res.status(500).json({ success: false, message: 'Error updating avatar' });
-                    res.json({ success: true, avatar_url: avatarUrl });
-                }
-            );
+            User.updateAvatar(userId, avatarUrl, (err) => {
+                if (err) return res.status(500).json({ success: false, message: 'Error updating avatar' });
+                res.json({ success: true, avatar_url: avatarUrl });
+            });
         });
     }
 };

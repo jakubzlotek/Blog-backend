@@ -48,6 +48,14 @@ const User = {
       [username, email, id],
       callback
     );
+  },
+
+  updateAvatar: (id, avatar_url, callback) => {
+    db.run(
+      'UPDATE users SET avatar_url = ? WHERE id = ?',
+      [avatar_url, id],
+      callback
+    );
   }
 };
 
