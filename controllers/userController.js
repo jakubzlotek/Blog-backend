@@ -45,15 +45,23 @@ const userController = {
                     bcrypt.hash(password, 10, (err, hash) => {
                         if (err) return res.status(500).json({ success: false, message: 'Error hashing password' });
 
-                        User.update(userId, { email, username, password: hash }, (err, user) => {
-                            if (err) return res.status(500).json({ success: false, message: 'Error updating user' });
-                            res.json({ success: true, user });
-                        });
+                        User.updateWithPassword
+                            ? User.updateWithPassword(userId, username, email, hash, (err) => {
+                                if (err) return res.status(500).json({ success: false, message: 'Error updating user' });
+                                User.findById(userId, (err, updatedUser) => {
+                                    if (err) return res.status(500).json({ success: false, message: 'Error fetching user' });
+                                    res.json({ success: true, user: updatedUser });
+                                });
+                            })
+                            : res.status(500).json({ success: false, message: 'Password update not supported' });
                     });
                 } else {
-                    User.update(userId, { email, username }, (err, user) => {
+                    User.update(userId, username, email, (err) => {
                         if (err) return res.status(500).json({ success: false, message: 'Error updating user' });
-                        res.json({ success: true, user });
+                        User.findById(userId, (err, updatedUser) => {
+                            if (err) return res.status(500).json({ success: false, message: 'Error fetching user' });
+                            res.json({ success: true, user: updatedUser });
+                        });
                     });
                 }
             });

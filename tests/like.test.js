@@ -28,11 +28,11 @@ describe('Like Integration Tests', () => {
     // Register and login a user to get a token
     await request(app)
       .post('/api/auth/register')
-      .send({ username: 'likeuser', email: 'likeuser@example.com', password: 'pass123' });
+      .send({ username: 'likeuser', email: 'likeuser@example.com', password: 'Password123!@#' });
 
     const loginRes = await request(app)
       .post('/api/auth/login')
-      .send({ email: 'likeuser@example.com', password: 'pass123' });
+      .send({ identifier: 'likeuser@example.com', password: 'Password123!@#' });
 
     userToken = loginRes.body.token;
 

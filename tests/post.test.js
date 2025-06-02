@@ -37,11 +37,11 @@ describe('Post Integration Tests', () => {
     // Register and login a user to get a token
     await request(app)
       .post('/api/auth/register')
-      .send({ username: 'postuser', email: uniqueEmail, password: 'pass123' });
+      .send({ username: 'postuser', email: uniqueEmail, password: 'Password123!@#' });
 
     const loginRes = await request(app)
       .post('/api/auth/login')
-      .send({ email: uniqueEmail, password: 'pass123' });
+      .send({ identifier: uniqueEmail, password: 'Password123!@#' });
 
     userToken = loginRes.body.token;
 
@@ -125,11 +125,11 @@ describe('Post Integration Tests', () => {
     const otherEmail = `otheruser_${Date.now()}_${Math.random()}@example.com`;
     await request(app)
       .post('/api/auth/register')
-      .send({ username: 'otheruser', email: otherEmail, password: 'pass123' });
+      .send({ username: 'otheruser', email: otherEmail, password: 'Password123!@#' });
 
     const loginRes = await request(app)
       .post('/api/auth/login')
-      .send({ email: otherEmail, password: 'pass123' });
+      .send({ email: otherEmail, password: 'Password123!@#' });
 
     const otherToken = loginRes.body.token;
 

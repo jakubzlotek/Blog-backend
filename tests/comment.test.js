@@ -36,11 +36,11 @@ describe('Comment Integration Tests', () => {
 
     await request(app)
       .post('/api/auth/register')
-      .send({ username: 'commentuser', email: uniqueEmail, password: 'pass123' });
+      .send({ username: 'commentuser', email: uniqueEmail, password: 'Password123!@#' });
 
     const loginRes = await request(app)
       .post('/api/auth/login')
-      .send({ email: uniqueEmail, password: 'pass123' });
+      .send({ identifier: uniqueEmail, password: 'Password123!@#' });
 
     userToken = loginRes.body.token;
 
