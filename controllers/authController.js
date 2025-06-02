@@ -2,6 +2,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const util = require("util");
 const User = require("../models/userModel");
+const JWT_SECRET = process.env.JWT_SECRET || "secret_key";
+
 
 // "Promisify" callback-based methods so we can await them
 const findByEmail = util.promisify(User.findByEmail);
@@ -49,7 +51,7 @@ const authController = {
       // Generujemy token
       const token = jwt.sign(
         { id: userRecord.id, username: userRecord.username },
-        "secret_key",
+        JWT_SECRET,
         { expiresIn: "1h" }
       );
 
@@ -66,6 +68,23 @@ const authController = {
       console.error("Login error:", err);
       return res.status(500).json({ message: "Błąd wewnętrzny serwera" });
     }
+  },
+
+  refreshToken: (req, res) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    if (!token) return res.status(401).json({ success: false, message: 'Unauthorized' });
+
+    jwt.verify(token, JWT_SECRET, (err, user) => {
+      if (err) return res.status(403).json({ success: false, message: 'Forbidden' });
+
+      // Remove iat and exp from user payload if present
+      const { iat, exp, ...payload } = user;
+
+      // Issue a new token
+      const newToken = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
+      res.json({ token: newToken });
+    });
   },
 };
 

@@ -128,6 +128,25 @@ router.post(
   },
   authController.login
 );
+/**
+ * @swagger
+ * /api/auth/refresh:
+ *   post:
+ *     summary: Refresh JWT token
+ *     description: Returns a new JWT token if the old one is valid (not expired).
+ *     tags:
+ *       - Authentication
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: New JWT token
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ */
+router.post('/refresh', authController.refreshToken);
 
 module.exports = router;
 
