@@ -104,18 +104,48 @@ const postController = {
     });
   },
 
-  searchPosts: (req, res) => {
+  searchPosts: async (req, res) => {
     const { query } = req.query;
     if (!query) {
       return res.status(400).json({ success: false, message: 'Query is required' });
     }
 
-    Post.search(query, (err, rows) => {
+    Post.search(query, async (err, posts) => {
       if (err) {
         console.error('searchPosts SQL error:', err);
         return res.status(500).json({ success: false, message: 'Failed to search posts' });
       }
-      return res.json({ success: true, posts: rows || [] });
+      // Attach comments, likes, avatar, likedUserIds, etc.
+      const postsWithExtras = await Promise.all(
+        (posts || []).map(async post => {
+          const comments = await new Promise(resolve =>
+            Comment.findAllByPostId(post.id, (err, comments) => resolve(comments || []))
+          );
+          const likes = await new Promise(resolve =>
+            Like.findAllByPostId(post.id, (err, likes) => resolve(likes || []))
+          );
+          const likedUserIds = likes.map(like => like.user_id);
+          // If avatar_url is not present, fetch it (for compatibility)
+          let avatar_url = post.avatar_url;
+          if (!avatar_url && post.user_id) {
+            // Try to get avatar_url from users table
+            avatar_url = await new Promise(resolve => {
+              const db = require('../database');
+              db.get('SELECT avatar_url FROM users WHERE id = ?', [post.user_id], (err, row) => {
+                resolve(row ? row.avatar_url : null);
+              });
+            });
+          }
+          return {
+            ...post,
+            comments,
+            likesCount: likes.length,
+            likedUserIds,
+            avatar_url,
+          };
+        })
+      );
+      return res.json({ success: true, posts: postsWithExtras });
     });
   }
 };

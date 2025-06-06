@@ -61,7 +61,8 @@ const authController = {
         user: {
           id: userRecord.id,
           username: userRecord.username,
-          email: userRecord.email
+          email: userRecord.email,
+          avatar_url: userRecord.avatar_url
         }
       });
     } catch (err) {
