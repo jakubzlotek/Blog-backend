@@ -31,10 +31,14 @@ router.get('/', async (req, res, next) => {
 
     // 3. mapujemy tylko potrzebne pola
     const ads = products.map(p => ({
-      id:    p.id,
-      title: p.title,
-      image: p.image,
-      link:  `https://fakestoreapi.com/products/${p.id}`
+      id:          p.id,
+      title:       p.title,
+      image:       p.image,
+      link:        `https://fakestoreapi.com/products/${p.id}`,
+      price:       p.price,
+      description: p.description,
+      category:    p.category,
+      rating:      p.rating
     }));
 
     // 4. zapisujemy w cache i zwracamy
