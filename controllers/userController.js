@@ -77,7 +77,7 @@ const userController = {
     },
     uploadAvatar: (req, res) => {
         if (!req.file) return res.status(400).json({ success: false, message: 'No file uploaded' });
-        const avatarUrl = `/uploads/${req.file.filename}`;
+        const avatarUrl = `:3000/api/uploads/${req.file.filename}`;
         const userId = req.user.id;
         User.findById(userId, (err, user) => {
             if (err || !user) return res.status(404).json({ success: false, message: 'User not found' });
