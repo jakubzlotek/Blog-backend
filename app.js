@@ -51,7 +51,7 @@ app.use(express.json());
 
 // ← Włączamy CORS dla frontendu na porcie 3001
 app.use(cors({
-  origin: 'http://localhost:3001'
+  origin: '*'
 }));
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
