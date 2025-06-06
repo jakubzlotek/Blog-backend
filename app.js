@@ -74,11 +74,10 @@ app.get('/api/health', (req, res) => {
 
 // Teraz backend nasłuchuje na porcie 3000
 const port = process.env.PORT || 3000;
-if (require.main === module) {
-  app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
-    console.log(`API docs: http://localhost:${port}/api-docs`);
-  });
-}
+
+app.listen(port, '0.0.0.0', () => {
+  console.log(`Server started on port ${port}`);
+});
+
 
 module.exports = app;
