@@ -59,7 +59,7 @@ app.use(cors({
   origin: '*'
 }));
 
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/api/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
