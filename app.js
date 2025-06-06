@@ -26,9 +26,14 @@ const swaggerOptions = {
       },
     },
     servers: [
-      {
-        url: 'http://localhost:3000',
-      },
+    {
+      url: 'http://localhost:3000/',
+      description: 'Local development server'
+    },
+    {
+      url: 'http://51.210.108.49:3000/',
+      description: 'Public external server'
+    }
     ],
     components: {
       securitySchemes: {
