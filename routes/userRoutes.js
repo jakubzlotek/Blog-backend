@@ -60,12 +60,9 @@ router.get('/me', authenticate, userController.getProfile);
  *                 type: string
  *               email:
  *                 type: string
- *               password:
- *                 type: string
  *           example:
  *             username: newname
  *             email: new@example.com
- *             password: newpassword
  *     responses:
  *       200:
  *         description: User profile updated successfully
