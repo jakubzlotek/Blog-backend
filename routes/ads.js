@@ -43,6 +43,36 @@ const TTL       = 5 * 60 * 1e3;  // 5 minut
  *                   $ref: '#/components/schemas/Ad'
  */
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Ad:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: integer
+ *         title:
+ *           type: string
+ *         image:
+ *           type: string
+ *         link:
+ *           type: string
+ *         price:
+ *           type: number
+ *         description:
+ *           type: string
+ *         category:
+ *           type: string
+ *         rating:
+ *           type: object
+ *           properties:
+ *             rate:
+ *               type: number
+ *             count:
+ *               type: integer
+ */
+
 router.get('/', async (req, res, next) => {
   try {
     // 1. sprawdzamy cache
