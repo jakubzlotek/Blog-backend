@@ -66,6 +66,14 @@ app.use('/api/user', userRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/posts', commentRoutes);
 app.use('/api/posts', likeRoutes);
+
+//generate swagger docs for ads
+/**
+ * @swagger
+ * tags:
+ *   name: Ads
+ *   description: API for managing ads
+ */
 app.use('/api/ads', adsRouter);
 
 

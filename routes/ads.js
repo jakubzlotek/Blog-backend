@@ -14,6 +14,35 @@ let cache       = null;          // przechowuje już zmapowane reklamy
 let cacheExpiry = 0;             // timestamp (ms) kiedy straci ważność
 const TTL       = 5 * 60 * 1e3;  // 5 minut
 
+
+//generate swagger docs for ads
+/**
+ * @swagger
+ * tags:
+ *   name: Ads
+ *   description: API for managing ads
+ */
+
+
+//generate swagger docs for get ads
+/**
+ * @swagger
+ * paths:
+ *   /api/ads:
+ *     get:
+ *       summary: Get all ads
+ *       tags: [Ads]
+ *       responses:
+ *         200:
+ *           description: A list of ads
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: array
+ *                 items:
+ *                   $ref: '#/components/schemas/Ad'
+ */
+
 router.get('/', async (req, res, next) => {
   try {
     // 1. sprawdzamy cache
